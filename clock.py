@@ -1,63 +1,176 @@
 import tkinter as tk
+from tkinter import ttk
 import math
 import time
 
-clear = 'systemTransparent'
-centerx, centery = (275 + 25) / 2, (50 + 300)/2
-radius = (300 - 50) / 2
-lenSec = 80
-lenMin = 110
-lenHour = 50
-
 
 class app:
+    centerx, centery = 0, 0 
+    radius = (300 - 50) / 2
+    lenSec = 80
+    lenMin = 110
+    lenHour = 50
+    diffx = 0
+    diffy = 0
+    coordinatesText = None
+    coordinatesEntry = None
+
+    seconds = None
+    minutes = None
+    hour = None
+    inpSeconds = 0
+    inpMinutes = 0
+    inpHours = 0
+    test = False
     window = None
     canvas = None
     secondsHand = None
     minutesHand = None
     hoursHand = None
+    testButton = None
+    hourInp = None
+    minInp = None
+    secInp = None
     def __init__(self):
         self.window = tk.Tk()
         self.window.title("CSCI 371 Clock Project")
-        self.window.geometry('300x400+0+0')
+        self.window.geometry('300x450+0+0')
         self.window.resizable(False, False)
+        self.inpSeconds = tk.IntVar()
+        self.inpMinutes = tk.IntVar()
+        self.inpHours = tk.IntVar()
+        self.coordinatesText = tk.StringVar()
+        self.diffx = tk.IntVar().set(100)
+        self.diffy = tk.IntVar().set(100)
+        self.centerx, self.centery = (275 + (25)) / 2, ((50) + (300))/2
+
     def createApp(self):
         self.createBase()
         self.createHands()
+
     def createBase(self):
-        self.canvas = tk.Canvas(width = 300, height = 500, bg = "white")
+        self.canvas = tk.Canvas(width = 300, height = 300, bg = "white")
         self.canvas.pack(padx = 0, pady = 0)
-        self.canvas.create_oval(25, 50, 275, 300, width=4, fill="#B6B6B6")
+        self.canvas.create_oval(25, 50, 275, 300, width=3, fill="#ffffff")
+        self.testButton = ttk.Button(self.window, text="Test!", command=self.switchModes)
+        self.testButton.pack()
+        self.test = False
+        self.createOptions()
+        
         # Create Numbers on Clock
         for i in range(1, 13):
-            x, y = centerx + (radius - 20) * (math.cos(math.radians(270 + ((360/12) * i)))), centery  + (radius - 20) * (math.sin(math.radians((270 + (360/12) * i))))
+            x, y = self.centerx + (self.radius - 20) * (math.cos(math.radians(270 + ((360/12) * i)))), self.centery  + (self.radius - 20) * (math.sin(math.radians((270 + (360/12) * i))))
             self.canvas.create_text(x, y, text=str(i), font='tkDefaultFont 24')
-    def createHands(self):
-        self.secondsHand = self.canvas.create_line(centerx, centery, centerx, centery - lenSec, width=2, fill="red")
-        self.minutesHand = self.canvas.create_line(centerx, centery, centerx, centery + lenMin, width=2, fill="black")
-        self.hoursHand = self.canvas.create_line(centerx, centery, centerx, centery + lenMin, width=4, fill="black")
-        self.canvas.create_oval(centerx - 5, centery - 5, centerx + 5, centery + 5, width=0, fill="black")
-        self.animate()
-    def updateHands(self):
-        timeStruct = time.localtime()
-        seconds = timeStruct.tm_sec
-        minutes = timeStruct.tm_min
-        hour = timeStruct.tm_hour
-        hour = hour % 12
-        seconds = seconds % 60
 
-        #Create temp variables
-        secondsx, secondsy = centerx + lenSec * (math.cos(math.radians(270 + ((360/60) * seconds)))), centery  + lenSec * (math.sin(math.radians((270 + (360/60) * seconds))))
-        minx, miny = centerx + lenMin * (math.cos(math.radians(270 + ((360/60) * minutes)))), centery  + lenMin * (math.sin(math.radians((270 + (360/60) * minutes))))
-        hourx, houry = centerx + lenHour * (math.cos(math.radians(270 + ((360/12) * hour)))), centery  + lenHour * (math.sin(math.radians((270 + (360/12) * hour))))
+    def createHands(self):
+        self.minutesHand = self.canvas.create_line(self.centerx, self.centery, self.centerx, self.centery + self.lenMin, width=2, fill="black")
+        self.secondsHand = self.canvas.create_line(self.centerx, self.centery, self.centerx, self.centery - self.lenSec, width=2, fill="red")
+        self.hoursHand = self.canvas.create_line(self.centerx, self.centery, self.centerx, self.centery + self.lenMin, width=4, fill="black")
+        self.canvas.create_oval(self.centerx - 5, self.centery - 5, self.centerx + 5, self.centery + 5, width=0, fill="black")
+        self.animate()
+
+    def updateHands(self):
+        if not self.test:
+            timeStruct = time.localtime()
+            self.seconds = timeStruct.tm_sec
+            self.minutes = timeStruct.tm_min
+            self.hour = timeStruct.tm_hour
+            self.hour = self.hour % 12
+            self.seconds = self.seconds % 60
+            #Create temp variables
+        else:
+            try:
+                self.seconds = int(self.secInp.get()) % 60
+                self.hour = int(self.hourInp.get()) % 12
+                self.minutes = int(self.minInp.get()) % 60
+            except:
+                print("Error occured parsing test") 
+
+        secondsx, secondsy = self.centerx + self.lenSec * (math.cos(math.radians(270 + ((360/60) * self.seconds)))), self.centery  + self.lenSec * (math.sin(math.radians((270 + (360/60) * self.seconds))))
+        minx, miny = self.centerx + self.lenMin * (math.cos(math.radians(270 + ((360/60) * (self.minutes + self.seconds/60))))), self.centery  + self.lenMin * (math.sin(math.radians((270 + (360/60) * (self.minutes + self.seconds/60)))))
+        hourx, houry = self.centerx + self.lenHour * (math.cos(math.radians(270 + ((360/12) * (self.hour + self.minutes/60))))), self.centery  + self.lenHour * (math.sin(math.radians((270 + (360/12) * (self.hour + self.minutes/60)))))
         
         #Update Coords
-        self.canvas.coords(self.secondsHand, centerx, centery, secondsx, secondsy)
-        self.canvas.coords(self.minutesHand, centerx, centery, minx, miny)
-        self.canvas.coords(self.hoursHand, centerx, centery, hourx, houry)
+        self.canvas.coords(self.secondsHand, self.centerx, self.centery, secondsx, secondsy)
+        self.canvas.coords(self.minutesHand, self.centerx, self.centery, minx, miny)
+        self.canvas.coords(self.hoursHand, self.centerx, self.centery, hourx, houry)
+        try:
+            newMinLength = self.sizeSlider.get()
+            
+            self.lenHour = findRatio(self.lenHour, self.lenMin, newMinLength)
+            self.lenSec = findRatio(self.lenSec, self.lenMin, newMinLength)
+            self.lenMin = newMinLength
+            print(self.lenHour, self.lenSec, self.lenMin)
+        except:
+            self.lenHour = self.lenHour
+            self.lenSec = self.lenSec
+            self.lenMin = self.lenMin
+            print(self.lenHour, self.lenSec, self.lenMin)
+
+            
+    def createOptions(self):
+        self.sizeSliderVar = 110
+        self.sliderFrame = tk.Frame(self.window)
+        self.sliderFrame.pack()
+        self.sizeLabel = ttk.Label(self.sliderFrame, text="Size:")
+        self.sizeLabel.pack(side="left")
+        self.sizeSlider = ttk.Scale(self.sliderFrame, value=110, from_=50, to=110, variable=self.sizeSliderVar)
+        self.sizeSlider.pack(side="left")
+        self.generateButton = ttk.Button(self.sliderFrame, text="Generate", command=self.generateCoordinates)
+        self.generateButton.pack(side="left")
+    def switchModes(self):
+        if self.test:
+            self.test = False
+            self.hourLabel.destroy()
+            self.hourInp.destroy()
+            self.minLabel.destroy()
+            self.minInp.destroy()
+            self.secLabel.destroy()
+            self.secInp.destroy()
+            self.testFrame.destroy()
+        else:
+            self.test = True
+            #Hour
+            self.testFrame = tk.Frame(self.window)
+            self.testFrame.pack()
+            self.hourLabel = ttk.Label(self.testFrame,text="Hour:", width=10)
+            self.hourLabel.pack(side="left", expand=True)
+            self.hourInp = tk.Entry(self.testFrame, width=5, textvariable=self.inpHours)
+            self.hourInp.pack(side="left")
+
+            #Minutes
+            self.minLabel = ttk.Label(self.testFrame,text="Minutes:", width=10)
+            self.minLabel.pack(side="left")
+            self.minInp = tk.Entry(self.testFrame,width=5, textvariable=self.inpMinutes)
+            self.minInp.pack(side="left")
+
+            #Seconds
+            self.secLabel = ttk.Label(self.testFrame,text="Seconds:", width=10, padding=0)
+            self.secLabel.pack(side="left")
+            self.secInp = tk.Entry(self.testFrame,width=5, textvariable=self.inpSeconds)
+            self.secInp.pack( side="left")
+
+    def generateCoordinates(self):
+        if(self.coordinatesEntry == None):
+            self.coordinateFrame= tk.Frame(self.window)
+            self.coordinateFrame.pack(fill="x")
+            self.coordinatesEntry = tk.Entry(self.coordinateFrame, textvariable=self.coordinatesText)
+            self.coordinatesEntry.pack(fill="x")
+        temp = str(self.centerx) + ',' + str(self.centery) + "  "
+        self.coordinatesText.set(temp)
     def animate(self):
         self.updateHands()
         self.window.after(500, self.animate)
+
+
+# Finds ratio to find new size of the hands
+def findRatio(oldX, oldLenMin, NewLenMin):
+    temp = (NewLenMin * oldX) / oldLenMin
+    if temp > 0:
+        return temp
+    else:
+        return oldX 
+
 if __name__ == "__main__":
     a = app()
     a.createApp()
