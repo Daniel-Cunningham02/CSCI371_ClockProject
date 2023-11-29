@@ -49,6 +49,7 @@ for i in range(len(trimedinp)-1):
 trimedinp = list(map(float, trimedinp))
 print(trimedinp)
 
+#   #   # Finds and sets the correct coordinates to the correct hands
 center = [trimedinp[0], trimedinp[1]]
 for i in range(2, len(trimedinp), 2):
     coordinates[dist(center[0], center[1], trimedinp[i], trimedinp[i + 1])] = coordinate(trimedinp[i], trimedinp[i+1])
@@ -59,7 +60,7 @@ print(distArray)
 minHand = hand(center[0], center[1], coordinates[distArray[2]].x, coordinates[distArray[2]].y, 60)
 secHand = hand(center[0], center[1], coordinates[distArray[1]].x, coordinates[distArray[1]].y, 60)
 hourHand = hand(center[0], center[1], coordinates[distArray[0]].x, coordinates[distArray[0]].y, 12)
-
+#   #   #
 # hour = hourHand.findTime()
 # Min = minHand.findTime()
 # sec = secHand.findTime()
