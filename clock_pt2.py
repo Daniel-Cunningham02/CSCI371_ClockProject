@@ -1,72 +1,73 @@
 import math
 
-class hand:
-    length = None
-    x1 = 0
-    y1 = 0
-    x2 = 0
-    y2 = 0
-    def __init__(self, centerx, centery, x, y, divisions):
-        self.x1 = centerx
-        self.y1 = centery
-        self.x2 = x
-        self.y2 = y
-        self.length = math.sqrt((self.x2 - self.x1) ** 2 + (self.y2 - self.y1) ** 2)
-        self.divisions = divisions
-    def findTime(self):
-        pass
-        # self.time = # Need to finish this tomorrow
-        # return self.time
-
-class coordinate:
-    x = 0
-    y = 0
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-
 def dist(centerx, centery, x, y):
-    return math.sqrt((x - centerx) ** 2 + (y - centery) ** 2)
+    return math.sqrt((float(x) - centerx) ** 2 + (float(y) - centery) ** 2)
+
+def maxIndex(arr):
+    index = 0
+    for i in range(1, len(arr)):
+        if(arr[i] > arr[index]):
+            index = i
+    return index
+    
+def compute_time(center_x, center_y, x1, y1, x2, y2, x3, y3):
+    
+    # Calculate angles in radians
+    hour_angle = math.atan2(center_y - y2, center_x - x2)
+    minute_angle = math.atan2(center_y - y3, center_x - x3)
+    second_angle = math.atan2(center_y - y1, center_x - x1)
+
+    # Convert angles to degrees
+    hour_angle = math.degrees(hour_angle) - 90
+    minute_angle = math.degrees(minute_angle) - 90
+    second_angle = math.degrees(second_angle) - 90
+
+    # Calculate hours, minutes, and seconds
+    hours = ((hour_angle / 30) + 12) % 13
+    minutes = (minute_angle / 6) % 60
+    seconds = (second_angle / 6)  % 60
+
+    return f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}"
+
+def main():
+    #   #   #  Make variables needed
+    inp = list(map(str, input().split(' ')))
+    trimedInp = list()
+    coordinates = list()
+    #   #   #
+
+    #   #   # Trim input and add to trimedInp
+    for i in range(len(inp) - 1):
+        if inp[i] != '':
+            inp[i] = inp[i][:-1]
+            trimedInp.append(inp[i])
+    trimedInp.append(inp[-1])
+    #   #   #
+
+    #   #   # Add trimedInp to coordinates as arrays. Easier to access and manipulate in loops
+    for i in range(0, len(trimedInp) - 1,2):
+        coordinates.append([float(trimedInp[i]), float(trimedInp[i+1])])
+    #   #   #
 
 
-inp = list(map(str, input().split(' ')))
-trimedinp = []
-coordinates = {}
-distArray = []
+    center = coordinates[0] # Create center variable and delete it from coordinates array
+    del coordinates[0]
 
 
-#   #    # Trimming
-for i in inp:
-    if i != '':
-        trimedinp.append(i)
+    distArr = [dist(center[0], center[1], coordinates[i][0], coordinates[i][1]) for i in range(3)]
 
-for i in range(len(trimedinp)-1):
-    trimedinp[i] = trimedinp[i][:-1]
-#   #   #
+    #   #   #   Separating the coordinates into their own variables relative to their distance from the center(Tells which hand is which)
+    x3, y3 = coordinates[maxIndex(distArr)][0], coordinates[maxIndex(distArr)][1]
+    del coordinates[maxIndex(distArr)]
+    del distArr[maxIndex(distArr)]
+    x1, y1 = coordinates[maxIndex(distArr)][0], coordinates[maxIndex(distArr)][1]
+    del coordinates[maxIndex(distArr)]
+    del distArr[maxIndex(distArr)]
+    x2, y2 = coordinates[0][0], coordinates[0][1]
+    del coordinates[0]
+    del distArr[maxIndex(distArr)]
+    #   #   #
 
+    print(compute_time(center[0], center[1], x1, y1, x2, y2, x3, y3))
 
-trimedinp = list(map(float, trimedinp))
-print(trimedinp)
-
-#   #   # Finds and sets the correct coordinates to the correct hands
-center = [trimedinp[0], trimedinp[1]]
-for i in range(2, len(trimedinp), 2):
-    coordinates[dist(center[0], center[1], trimedinp[i], trimedinp[i + 1])] = coordinate(trimedinp[i], trimedinp[i+1])
-    distArray.append(dist(center[0], center[1], trimedinp[i], trimedinp[i + 1]))
-distArray.sort()
-print(distArray)
-
-minHand = hand(center[0], center[1], coordinates[distArray[2]].x, coordinates[distArray[2]].y, 60)
-secHand = hand(center[0], center[1], coordinates[distArray[1]].x, coordinates[distArray[1]].y, 60)
-hourHand = hand(center[0], center[1], coordinates[distArray[0]].x, coordinates[distArray[0]].y, 12)
-#   #   #
-# hour = hourHand.findTime()
-# Min = minHand.findTime()
-# sec = secHand.findTime()
-
-hour = distArray[0]
-sec = distArray[1]
-Min = distArray[2]
-
-print(hour,sec,  Min)
+main()
