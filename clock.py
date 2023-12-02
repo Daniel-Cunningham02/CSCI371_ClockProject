@@ -40,9 +40,9 @@ class app:
         self.inpMinutes = tk.IntVar()
         self.inpHours = tk.IntVar()
         self.coordinatesText = tk.StringVar()
-        self.diffx = tk.IntVar().set(100)
-        self.diffy = tk.IntVar().set(100)
-        self.centerx, self.centery = (275 + (25)) / 2, ((50) + (300))/2
+        self.diffx = tk.IntVar()
+        self.diffy = tk.IntVar()
+        self.centerx, self.centery = (275 + (25) + self.diffx.get()) / 2, ((50) + (300) + self.diffy.get())/2
 
     def createApp(self):
         self.createBase()
@@ -51,7 +51,7 @@ class app:
     def createBase(self):
         self.canvas = tk.Canvas(width = 300, height = 300, bg = "white")
         self.canvas.pack(padx = 0, pady = 0)
-        self.canvas.create_oval(25, 50, 275, 300, width=3, fill="#ffffff")
+        self.border = self.canvas.create_oval(25 + self.diffx.get()/2, 50 + self.diffy.get()/2, 275 + self.diffx.get()/2, 300 + self.diffy.get()/2, width=3, fill="#ffffff")
         self.testButton = ttk.Button(self.window, text="Test!", command=self.switchModes)
         self.testButton.pack()
         self.test = False
@@ -66,10 +66,15 @@ class app:
         self.minutesHand = self.canvas.create_line(self.centerx, self.centery, self.centerx, self.centery + self.lenMin, width=2, fill="black")
         self.secondsHand = self.canvas.create_line(self.centerx, self.centery, self.centerx, self.centery - self.lenSec, width=2, fill="red")
         self.hoursHand = self.canvas.create_line(self.centerx, self.centery, self.centerx, self.centery + self.lenMin, width=4, fill="black")
-        self.canvas.create_oval(self.centerx - 5, self.centery - 5, self.centerx + 5, self.centery + 5, width=0, fill="black")
+        self.point = self.canvas.create_oval(self.centerx - 5, self.centery - 5, self.centerx + 5, self.centery + 5, width=0, fill="black")
         self.animate()
 
     def updateHands(self):
+        try:
+            self.centerx, self.centery = (275 + (25) + self.diffx.get()) / 2, ((50) + (300) + self.diffy.get())/2
+            self.canvas.coords(self.point, self.centerx - 5, self.centery - 5, self.centerx + 5, self.centery + 5 )
+        except:
+            pass
         if not self.test:
             timeStruct = time.localtime()
             self.seconds = timeStruct.tm_sec
@@ -95,6 +100,7 @@ class app:
         self.canvas.coords(self.minutesHand, self.centerx, self.centery, minx, miny)
         self.canvas.coords(self.hoursHand, self.centerx, self.centery, hourx, houry)
         try:
+            self.canvas.coords(self.border, 25 + self.diffx.get()/2, 50 + self.diffy.get()/2, 275 + self.diffx.get()/2, 300 + self.diffy.get()/2)
             newMinLength = self.sizeSlider.get()
             
             self.lenHour = findRatio(self.lenHour, self.lenMin, newMinLength)
@@ -118,6 +124,19 @@ class app:
         self.sizeSlider.pack(side="left")
         self.generateButton = ttk.Button(self.sliderFrame, text="Generate", command=self.generateCoordinates)
         self.generateButton.pack(side="left")
+
+        # Create New Frame
+        self.changeCenterFrame = tk.Frame(self.window)
+        self.changeCenterFrame.pack()
+        self.diffxLabel = ttk.Label(self.changeCenterFrame, text="Translate X:")
+        self.diffxLabel.pack(side="left")
+        self.diffxInp = tk.Entry(self.changeCenterFrame, width=5, textvariable=self.diffx)
+        self.diffxInp.pack(side="left")
+        self.diffxLabel = ttk.Label(self.changeCenterFrame, text="Translate Y:")
+        self.diffxLabel.pack(side="left")
+        self.diffyInp = tk.Entry(self.changeCenterFrame,width=5, textvariable=self.diffy)
+        self.diffyInp.pack(side="left")
+
     def switchModes(self):
         if self.test:
             self.test = False
@@ -156,7 +175,10 @@ class app:
             self.coordinateFrame.pack(fill="x")
             self.coordinatesEntry = tk.Entry(self.coordinateFrame, textvariable=self.coordinatesText)
             self.coordinatesEntry.pack(fill="x")
-        temp = str(self.centerx) + ',' + str(self.centery) + "  "
+        temp = str("{:.2f}".format(self.centerx)) + ', ' + str("{:.2f}".format(self.centery)) + "  "
+        temp += str("{:.2f}".format(self.canvas.coords(self.hoursHand)[2])) + ', ' + str("{:.2f}".format(self.canvas.coords(self.hoursHand)[3])) + "  "
+        temp += str("{:.2f}".format(self.canvas.coords(self.minutesHand)[2])) + ', ' + str("{:.2f}".format(self.canvas.coords(self.minutesHand)[3])) + "  "
+        temp += str("{:.2f}".format(self.canvas.coords(self.secondsHand)[2])) + ', ' + str("{:.2f}".format(self.canvas.coords(self.secondsHand)[3]))
         self.coordinatesText.set(temp)
     def animate(self):
         self.updateHands()
