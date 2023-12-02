@@ -76,7 +76,7 @@ class app:
             self.centerx, self.centery = (275 + (25) + self.diffx.get()) / 2, ((50) + (300) + self.diffy.get())/2
             self.canvas.coords(self.point, self.centerx - 5, self.centery - 5, self.centerx + 5, self.centery + 5 )
             for i in range(len(self.numbers)):
-                x, y = self.centerx + (self.radius - 20) * (math.cos(math.radians(270 + ((360/12) * i+1)))), self.centery  + (self.radius - 20) * (math.sin(math.radians((270 + (360/12) * i+1))))
+                x, y = self.centerx + (self.radius - 20) * (math.cos(math.radians(270 + ((360/12) * (i + 1))))), self.centery  + (self.radius - 20) * (math.sin(math.radians((270 + (360/12) * (i + 1) ))))
                 self.canvas.coords(self.numbers[i], x, y)
         except:
             pass
@@ -180,9 +180,9 @@ class app:
             self.coordinateFrame.pack(fill="x")
             self.coordinatesEntry = tk.Entry(self.coordinateFrame, textvariable=self.coordinatesText)
             self.coordinatesEntry.pack(fill="x")
-        temp = str("{:.2f}".format(self.centerx)) + ', ' + str("{:.2f}".format(self.centery)) + "  "
-        temp += str("{:.2f}".format(self.canvas.coords(self.hoursHand)[2])) + ', ' + str("{:.2f}".format(self.canvas.coords(self.hoursHand)[3])) + "  "
-        temp += str("{:.2f}".format(self.canvas.coords(self.minutesHand)[2])) + ', ' + str("{:.2f}".format(self.canvas.coords(self.minutesHand)[3])) + "  "
+        temp = str("{:.2f}".format(self.centerx)) + ', ' + str("{:.2f}".format(self.centery)) + " "
+        temp += str("{:.2f}".format(self.canvas.coords(self.hoursHand)[2])) + ', ' + str("{:.2f}".format(self.canvas.coords(self.hoursHand)[3])) + " "
+        temp += str("{:.2f}".format(self.canvas.coords(self.minutesHand)[2])) + ', ' + str("{:.2f}".format(self.canvas.coords(self.minutesHand)[3])) + " "
         temp += str("{:.2f}".format(self.canvas.coords(self.secondsHand)[2])) + ', ' + str("{:.2f}".format(self.canvas.coords(self.secondsHand)[3]))
         self.coordinatesText.set(temp)
     def animate(self):
