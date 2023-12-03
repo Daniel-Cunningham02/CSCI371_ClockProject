@@ -97,7 +97,7 @@ class app:
                 print("Error occured parsing test") 
 
         secondsx, secondsy = self.centerx + self.lenSec * (math.cos(math.radians(270 + ((360/60) * self.seconds)))), self.centery  + self.lenSec * (math.sin(math.radians((270 + (360/60) * self.seconds))))
-        minx, miny = self.centerx + self.lenMin * (math.cos(math.radians(270 + ((360/60) * (self.minutes + self.seconds/60))))), self.centery  + self.lenMin * (math.sin(math.radians((270 + (360/60) * (self.minutes + self.seconds/60)))))
+        minx, miny = self.centerx + self.lenMin * (math.cos(math.radians(270 + ((360/60) * self.minutes)))), self.centery  + self.lenMin * (math.sin(math.radians((270 + (360/60) * self.minutes))))
         hourx, houry = self.centerx + self.lenHour * (math.cos(math.radians(270 + ((360/12) * (self.hour + self.minutes/60))))), self.centery  + self.lenHour * (math.sin(math.radians((270 + (360/12) * (self.hour + self.minutes/60)))))
         
         #Update Coords

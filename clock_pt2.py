@@ -23,9 +23,12 @@ def compute_time(center_x, center_y, x1, y1, x2, y2, x3, y3):
     second_angle = math.degrees(second_angle) - 90
 
     # Calculate hours, minutes, and seconds
-    hours = ((hour_angle / 30) + 12) % 12
-    minutes = (minute_angle / 6) % 60
-    seconds = (second_angle / 6)  % 60
+    hours = (hour_angle / 30) % 12
+    minutes = round((minute_angle / 6) % 60)
+    seconds = round((second_angle / 6)  % 60)
+    
+    if int(hours) == 0:
+        hours = 12
 
     return f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}"
 
