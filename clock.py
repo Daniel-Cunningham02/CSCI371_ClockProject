@@ -32,6 +32,7 @@ class app:
     minInp = None
     secInp = None
     def __init__(self):
+        self.ticks = []
         self.numbers = []
         self.window = tk.Tk()
         self.window.title("CSCI 371 Clock Project")
@@ -60,9 +61,20 @@ class app:
         
         # Create Numbers on Clock
         for i in range(1, 13):
-            x, y = self.centerx + (self.radius - 20) * (math.cos(math.radians(270 + ((360/12) * i)))), self.centery  + (self.radius - 20) * (math.sin(math.radians((270 + (360/12) * i))))
+            x, y = self.centerx + (self.radius - 27) * (math.cos(math.radians(270 + ((360/12) * i)))), self.centery  + (self.radius - 27) * (math.sin(math.radians((270 + (360/12) * i))))
             text = self.canvas.create_text(x, y, text=str(i), font='tkDefaultFont 24')
             self.numbers.append(text)
+        for i in range(0, 60):
+            if(i % 5 == 0):
+                x, y = self.centerx + (self.radius) * (math.cos(math.radians(270 + ((360/60) * i)))), self.centery  + (self.radius) * (math.sin(math.radians((270 + (360/60) * i))))
+                x2, y2 = self.centerx + (self.radius - 12) * (math.cos(math.radians(270 + ((360/60) * i)))), self.centery + (self.radius - 12) * (math.sin(math.radians((270 + (360/60) * i))))
+                tick = self.canvas.create_line(x, y, x2, y2)
+                self.ticks.append(tick)
+            else:
+                x, y = self.centerx + (self.radius) * (math.cos(math.radians(270 + ((360/60) * i)))), self.centery  + (self.radius) * (math.sin(math.radians((270 + (360/60) * i))))
+                x2, y2 = self.centerx + (self.radius - 7) * (math.cos(math.radians(270 + ((360/60) * i)))), self.centery + (self.radius - 7) * (math.sin(math.radians((270 + (360/60) * i))))
+                tick = self.canvas.create_line(x, y, x2, y2)
+                self.ticks.append(tick)
 
     def createHands(self):
         self.minutesHand = self.canvas.create_line(self.centerx, self.centery, self.centerx, self.centery + self.lenMin, width=2, fill="black")
@@ -76,8 +88,17 @@ class app:
             self.centerx, self.centery = (275 + (25) + self.diffx.get()) / 2, ((50) + (300) + self.diffy.get())/2
             self.canvas.coords(self.point, self.centerx - 5, self.centery - 5, self.centerx + 5, self.centery + 5 )
             for i in range(len(self.numbers)):
-                x, y = self.centerx + (self.radius - 20) * (math.cos(math.radians(270 + ((360/12) * (i + 1))))), self.centery  + (self.radius - 20) * (math.sin(math.radians((270 + (360/12) * (i + 1) ))))
+                x, y = self.centerx + (self.radius - 27) * (math.cos(math.radians(270 + ((360/12) * (i + 1))))), self.centery  + (self.radius - 27) * (math.sin(math.radians((270 + (360/12) * (i + 1) ))))
                 self.canvas.coords(self.numbers[i], x, y)
+            for i in range(len(self.ticks)):
+                if i % 5 == 0:
+                    x, y = self.centerx + (self.radius) * (math.cos(math.radians(270 + ((360/60) * i)))), self.centery  + (self.radius) * (math.sin(math.radians((270 + (360/60) * i))))
+                    x2, y2 = self.centerx + (self.radius - 12) * (math.cos(math.radians(270 + ((360/60) * i)))), self.centery + (self.radius - 12) * (math.sin(math.radians((270 + (360/60) * i))))
+                    self.canvas.coords(self.ticks[i], x, y, x2, y2)
+                else:
+                    x, y = self.centerx + (self.radius) * (math.cos(math.radians(270 + ((360/60) * i)))), self.centery  + (self.radius) * (math.sin(math.radians((270 + (360/60) * i))))
+                    x2, y2 = self.centerx + (self.radius - 7) * (math.cos(math.radians(270 + ((360/60) * i)))), self.centery + (self.radius - 7) * (math.sin(math.radians((270 + (360/60) * i))))
+                    self.canvas.coords(self.ticks[i], x, y, x2, y2)
         except:
             pass
         if not self.test:
